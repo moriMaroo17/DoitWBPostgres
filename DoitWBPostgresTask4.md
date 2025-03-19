@@ -112,5 +112,5 @@
     2025-03-19 14:16:13.203 UTC [73] ERROR:  syntax error at or near "exit" at character 1
     2025-03-19 14:16:13.203 UTC [73] STATEMENT:  exit();
     ...
-
+```
 Ну и уже в логах видим кто кого и чем заблокировал
