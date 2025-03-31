@@ -97,7 +97,32 @@
     Starting PgBouncer: pgbouncer.
     ```
 
-6. Теперь меняем pgbouncer pool_mode и прогоняем бенч. 
+6. Задаем пароль
+    
+    > Не использую sudo так как выполняю подобные команды из под рута через docker exec
+
+    ```sh
+    $ psql -c "ALTER USER postgres WITH PASSWORD 'admin123#';"
+    ```
+
+    ```sh
+    $ echo "localhost:5432:thai:postgres:admin123#" | tee -a /var/lib/postgresql/.pgpass && chmod 600 /var/lib/postgresql/.pgpass 
+    ```
+
+    ```sh
+    $ chown postgres:postgres /var/lib/postgresql/.pgpass
+    ```
+
+
+7. Прыгаем на pgbouncer
+
+    ```sh
+    $ psql -p 6432 -h 127.0.0.1 -d thai -U postgres
+    ```
+
+    > Все работает, так что запускаем бенчмарки
+
+8. Теперь меняем pgbouncer pool_mode и прогоняем бенч. 
 
     для начала выставил 
     ```
@@ -111,56 +136,59 @@
     - для pool_mode transaction
     
         ```sh
-        $ /usr/lib/postgresql/17/bin/pgbench -c 100 -j 4 -T 15 -f ~/workload.sql -n -U postgres thai
+        $ /usr/lib/postgresql/17/bin/pgbench -c 120 -j 4 -T 10 -f ~/workload.sql -n -U postgres -p 6432 -h 127.0.0.1 thai
+        Password: 
         pgbench (17.4 (Debian 17.4-1.pgdg120+2))
         transaction type: /var/lib/postgresql/workload.sql
         scaling factor: 1
         query mode: simple
-        number of clients: 100
+        number of clients: 120
         number of threads: 4
         maximum number of tries: 1
-        duration: 15 s
-        number of transactions actually processed: 1193500
+        duration: 10 s
+        number of transactions actually processed: 185925
         number of failed transactions: 0 (0.000%)
-        latency average = 1.252 ms
-        initial connection time = 101.754 ms
-        tps = 79871.049913 (without initial connection time)
+        latency average = 6.373 ms
+        initial connection time = 132.231 ms
+        tps = 18829.415471 (without initial connection time)
         ```
 
     - для pool_mode statement
 
         ```sh
-        $ /usr/lib/postgresql/17/bin/pgbench -c 100 -j 4 -T 15 -f ~/workload.sql -n -U postgres thai
+        $ /usr/lib/postgresql/17/bin/pgbench -c 120 -j 4 -T 10 -f ~/workload.sql -n -U postgres -p 6432 -h 127.0.0.1 thai
+        Password: 
         pgbench (17.4 (Debian 17.4-1.pgdg120+2))
         transaction type: /var/lib/postgresql/workload.sql
         scaling factor: 1
         query mode: simple
-        number of clients: 100
+        number of clients: 120
         number of threads: 4
         maximum number of tries: 1
-        duration: 15 s
-        number of transactions actually processed: 1177784
+        duration: 10 s
+        number of transactions actually processed: 197841
         number of failed transactions: 0 (0.000%)
-        latency average = 1.267 ms
-        initial connection time = 120.673 ms
-        tps = 78953.048777 (without initial connection time)
+        latency average = 5.976 ms
+        initial connection time = 153.723 ms
+        tps = 20080.149679 (without initial connection time)
         ```
     
     - для pool_mode session
 
         ```sh
-        $ /usr/lib/postgresql/17/bin/pgbench -c 100 -j 4 -T 15 -f ~/workload.sql -n -U postgres thai
+        $ /usr/lib/postgresql/17/bin/pgbench -c 120 -j 4 -T 10 -f ~/workload.sql -n -U postgres -p 6432 -h 127.0.0.1 thai
+        Password: 
         pgbench (17.4 (Debian 17.4-1.pgdg120+2))
         transaction type: /var/lib/postgresql/workload.sql
         scaling factor: 1
         query mode: simple
-        number of clients: 100
+        number of clients: 120
         number of threads: 4
         maximum number of tries: 1
-        duration: 15 s
-        number of transactions actually processed: 1211398
+        duration: 10 s
+        number of transactions actually processed: 154409
         number of failed transactions: 0 (0.000%)
-        latency average = 1.234 ms
-        initial connection time = 84.726 ms
-        tps = 81025.831257 (without initial connection time)
+        latency average = 7.686 ms
+        initial connection time = 124.230 ms
+        tps = 15613.362075 (without initial connection time)
         ```
